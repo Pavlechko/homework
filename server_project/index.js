@@ -9,7 +9,7 @@ const { buildSchema } = require('graphql');
 const express_graphql = require('express-graphql');
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('mysql://root:123@localhost/project');
+const sequelize = new Sequelize('mysql://root:62886288@localhost/project');
 
 class User extends Sequelize.Model {}
 User.init({
@@ -58,14 +58,31 @@ Category.belongsTo(Category);
 
 let schema = buildSchema(`
     type Query {
-        getUsers: [User]
-        getPurchases(id: Int!): [Purchase]
-        getProducts(id: Int!): [Product]
-        getCategories(id: Int!): [Category]
+        getUsers(query: String): [User]
+        getOneUser(query: String): User
+        getPurchases(query: String): [Purchase]
+        getOnePurchase(query: String): Purchase
+        getProducts(query: String): [Product]
+        getOneProduct(query: String): Product
+        getCategories(query: String): [Category]
+        getOneCategory(query: String): Category
+        getProductPurchase(query: String): [ProductPurchase]
+        getOneProductPurchase(query: String): ProductPurchase
     }
     type Mutation {
+        UserDelete(user: UserInput): User
+        UserUpsert(user: UserInput): User
+        PurchaseUpsert(purchase: PurchaseInput): Purchase
+        PurchaseDelete(purchase: PurchaseInput): Purchase
+        ProductDelete(product: ProductInput): Product
+        ProductUpsert(product: ProductInput): Product
+        CategoryDelete(category: CategoryInput): Category
+        CategoryUpsert(category: CategoryInput): Category
+        ProductPurchaseDelete(productPurchase: ProductPurchaseInput): ProductPurchase
+        ProductPurchaseUpsert(productPurchase: ProductPurchaseInput): ProductPurchase
         createProduct(product: ProductInput): Product
         createUser(user: UserInput): User
+        createCategory(category: CategoryInput): Category
     }
     type User {
         id: Int
@@ -133,6 +150,8 @@ let schema = buildSchema(`
     }
 `);
 
+//INSERT INTO categories (name, createdAt, updatedAt) VALUES("Test1", NOW(), NOW());
+
 async function getUsers(){
     return await User.findAll({})
 }
@@ -145,10 +164,15 @@ async function getPurchases(){
     return await Purchase.findAll({})
 }
 
+async function getCategories(){
+    return await Category.findAll({})
+}
+
 var root = {
     getUsers,
     getProducts,
     getPurchases,
+    getCategories,
 };
 
 
