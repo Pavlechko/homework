@@ -9,7 +9,7 @@ const { buildSchema } = require('graphql');
 const express_graphql = require('express-graphql');
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('mysql://root:62886288@localhost/project');
+const sequelize = new Sequelize('mysql://root:123@localhost/project');
 
 class User extends Sequelize.Model {}
 User.init({
@@ -35,7 +35,11 @@ ProductPurchase.init({
     count: Sequelize.INTEGER
 }, { sequelize, modelName: 'productPurchase'});
 
-class Product extends Sequelize.Model {}
+class Product extends Sequelize.Model {
+    get category(){
+        return this.getCategories()
+    }
+}
 Product.init({
     name: Sequelize.STRING,
     description: Sequelize.TEXT,
@@ -46,15 +50,19 @@ Product.init({
 Product.belongsToMany(Purchase, { through: ProductPurchase });
 Purchase.belongsToMany(Product, { through: ProductPurchase });
 
-class Category extends Sequelize.Model {}
+class Category extends Sequelize.Model {
+    get products(){
+        return this.getProducts()
+    }
+}
 Category.init({
-    name: Sequelize.STRING
+    name: Sequelize.STRING  
 }, { sequelize, modelName: 'category'});
 
 Product.belongsTo(Category);
 Category.hasMany(Product);
-Category.hasMany(Category);
-Category.belongsTo(Category);
+//Category.hasMany(Category);
+//Category.belongsTo(Category);
 
 let schema = buildSchema(`
     type Query {
@@ -100,8 +108,10 @@ let schema = buildSchema(`
         password: String
     }
     type Purchase {
-        id: ID
+        id: Int
+        userId: Int
         createdAt: String
+        updatedAt: String
         productPurchases: [ProductPurchase]
         total: Float
     }
@@ -109,35 +119,39 @@ let schema = buildSchema(`
         productPurchases: [ProductPurchaseInput]
     }
     type Product {
-        id: ID
+        id: Int
+        productId: Int
         createdAt: String
+        updatedAt: String
         name: String
         description: String
         price: Float
         quantity: Float
         productPurchases: [ProductPurchase]
-        categories: [Category]
+        categoryId: ID
     }
     input ProductInput {
         name: String!
         description: String!
         price: Float!
         quantity: Float!
-        categories: [CategoryInput]
+        categoryId: ID
     }
     type Category {
-        id: ID
+        id: Int
         createdAt: String
+        updatedAt: String
         name: String
         products: [Product]
     }
     input CategoryInput {
         name: String!
-        products: [ProductInput]
+        productsId: [ID]
     }
     type ProductPurchase {
-        id: ID
+        id: Int
         createdAt: String
+        updatedAt: String
         price: Float
         count: Float
         product: Product
@@ -145,34 +159,72 @@ let schema = buildSchema(`
     }
     input ProductPurchaseInput {
         count: Int
-        products: [ProductInput]
-        purchases: [PurchaseInput]
+        products: [ID]
+        purchases: [ID]
     }
 `);
 
 //INSERT INTO categories (name, createdAt, updatedAt) VALUES("Test1", NOW(), NOW());
 
+async function createUser({user}, context){ // it works
+    // console.log(login);
+    // console.log(password);
+    // console.log(username);
+    // console.log(account_type);
+    return await User.create(user)
+}
+
+async function userUpsert({login, password, username, id}, context){
+    let toUpdate = await User.findOne({where: {id}})
+    return await toUpdate.update({login, username, password}).then(() => {})
+}
+
+async function createProduct({product}, context){ // it works
+    return await Product.create(product)
+}
+
+async function createCategory({category}, context){ // it works
+    return await Category.create(category)
+}
+
 async function getUsers(){
     return await User.findAll({})
 }
 
-async function getProducts(){
-    return await Product.findAll({})
+async function getProducts({product}, context){ // it works
+    return await Product.findAll(product)
+}
+
+async function getOneProduct({query}, context){ // it works
+    console.log(query);
+    return await Product.findOne({where: {name:query}})
 }
 
 async function getPurchases(){
     return await Purchase.findAll({})
 }
 
-async function getCategories(){
-    return await Category.findAll({})
+async function getCategories({category}, context){ // it works
+    return await Category.findAll(category)
+}
+
+async function getOneCategory({query}, context){ // it works
+    console.log(query);
+    //console.log(id);
+    return await Category.findOne({where: {name:query}})
 }
 
 var root = {
+    createUser,
+    userUpsert,
+    createProduct,  // it works
+    createCategory, // it works
     getUsers,
-    getProducts,
+    getProducts,    // it works
+    getOneProduct,  // it works
     getPurchases,
-    getCategories,
+    getCategories,  // it works
+    getOneCategory, // it works
 };
 
 
