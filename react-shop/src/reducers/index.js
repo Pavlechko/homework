@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
-import books from './books-reducer';
+import promiseReducer from './books-reducer';
 
 export default combineReducers({
-    books,
+    promiseReducer,
 });

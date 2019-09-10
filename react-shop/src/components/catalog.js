@@ -1,6 +1,9 @@
 import React from 'react';
 import { GraphQLClient } from 'graphql-request';
 import ReactDataGrid from "react-data-grid";
+import { connect } from 'react-redux';
+
+//import { setBooks } from '../actions/books-actions';
 
 const gql = new GraphQLClient("/graphql");
 
@@ -60,16 +63,27 @@ class Catalog extends React.Component {
         return(
             <div>
                 <h1>Catalog</h1>
-                {this.state.status ? <ReactDataGrid
+                {!this.state.status
+                ? <h3>Loading...</h3>
+                : <ReactDataGrid
                     columns={columns}
                     rowGetter={i => this.state.rows[i]}
-                    rowsCount={5}
+                    rowsCount={10}
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     enableCellSelect={true}
-                /> : <h3>Loading...</h3>}
+                />}
             </div>
         );
     };
 };
 
-export default Catalog;
+// const mapStateToProps = ({ books }) =>  ({
+//     books: books.items
+// });
+
+// const mapDispatchToProps = dispatch => ({
+//     setBooks: books => dispatch(setBooks(books))
+// });
+// console.log(mapStateToProps);
+
+  export default connect(/*mapStateToProps, mapDispatchToProps*/)(Catalog);

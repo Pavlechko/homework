@@ -1,29 +1,17 @@
-const initialState = {
-    isLoading: false,
-    items: null,
-};
+import {createStore, applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
 
-export default (state = initialState, action) => {
-    switch (action.type) {
-        case 'SET_BOOKS':
-            return {
-                ...state,
-                items: action.payload,
-                isLoading: true,
-            };
-            case 'SET_IS_LOADING':
-                return {
-                    ...state,
-                    isLoading: action.payload
-                };
-        // case 'ADD_BOOKS':
-        //     return {
-        //         books: [
-        //             ...state.books,
-        //             action.payload
-        //         ]
-        //     };
-        default:
-            return state;
-    };
-}
+export const store  = createStore(promiseReducer, applyMiddleware(thunk));
+store.subscribe(()=>console.log(store.getState()));
+
+function promiseReducer(state, action){
+    if (!state){
+      return {}
+    }
+    if (action.type === 'PROMISE'){
+      return {...state, [action.name]: {status: action.status, payload: action.payload, error: action.error}}
+    }
+      return state;
+    }
+
+export default promiseReducer;
