@@ -13,7 +13,7 @@ class BookCard extends React.Component {
   }
 
   async componentDidMount() {
-		let getAllProducts = promiseActionsMaker('products',
+		let getAllProducts = await promiseActionsMaker('products',
     gql.request(`query getProducts {
         getProducts {
         id,
@@ -26,9 +26,16 @@ class BookCard extends React.Component {
     }`)
     );
 
-  store.dispatch(getAllProducts());
-  console.log(store.getState.getAllProducts);
-	}
+
+
+  await store.dispatch(getAllProducts());
+
+  console.log(11111111);
+  console.log(store.getState());
+
+  }
+
+
 
   render() {
 		return (
@@ -44,11 +51,18 @@ class BookCard extends React.Component {
         </Card.Description>
       </Card.Content>
       <Card.Content >
-          <Icon name='ukr' />
+          <Icon name='' />
           {} ₴
       </Card.Content>
     </Card>
-);
-}
-}
+    );
+  }
+};
+
+const mapStateToProps = state => {
+	return {
+		info: state
+	};
+};
+
 export default BookCard;
