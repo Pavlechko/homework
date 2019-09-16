@@ -3,8 +3,6 @@ import { GraphQLClient } from 'graphql-request';
 import ReactDataGrid from "react-data-grid";
 import { connect } from 'react-redux';
 
-//import { setBooks } from '../actions/books-actions';
-
 const gql = new GraphQLClient("/graphql");
 
 const columns = [

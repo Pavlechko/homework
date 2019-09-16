@@ -57,7 +57,7 @@ class CreateCategory extends React.Component {
 				createCategory(category: $category){
 				  name
 				}
-			  }`, { name: this.state.name }
+			  }`, { category: {name: this.state.name }}
 			)
 		this.setState({name: ''})
 		//store.dispatch(createCategory());
@@ -75,13 +75,11 @@ class CreateCategory extends React.Component {
                     rowsCount={5}
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     enableCellSelect={true}
-                />} */}
-				<hr />
+                />} */}				
 				<h3>form to create Category</h3>
 				<label>name</label>
 				<input type='text' value={this.state.name} onChange={evt => this.setState({ name: evt.target.value })} />
-				<button onClick={this.handleSubmit}>Create...</button>
-				<hr />
+				<button onClick={this.handleSubmit}>Create...</button>				
 			</div>
 		)
 	}

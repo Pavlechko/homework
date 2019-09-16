@@ -4,17 +4,15 @@ import { createBrowserHistory } from 'history';
 import { Router, Route, Link } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 import { Provider } from 'react-redux';
-
-import { store } from './reducers/books-reducer';
-
-import { Menu } from 'semantic-ui-react'
-
+import { Menu } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
+import { store } from './reducers/books-reducer';
 import Header from './components/header';
 import Catalog from './components/catalog';
 import BookCard from './components/bookCard';
 import CreateCategory from './components/createCategory';
+
 
 class App extends React.Component {
   render() {
